@@ -1,0 +1,118 @@
+"""
+=====================================================
+AUTONOMOUS VEHICLE SIMULATION USING PYTHON
+=====================================================
+This program simulates a simple autonomous vehicle
+with lane following and obstacle avoidance behavior.
+
+Modules:
+1. Environment
+2. Perception
+3. Decision Making
+4. Control
+=====================================================
+"""
+
+import time
+import random
+
+# ---------------------------------
+# ENVIRONMENT
+# ---------------------------------
+
+road_length = 50
+lane_position = 1  # 0 = left, 1 = center, 2 = right
+vehicle_position = 1
+
+# Random obstacle placement
+obstacles = random.sample(range(5, road_length), 3)
+
+# ---------------------------------
+# PERCEPTION MODULE
+# ---------------------------------
+
+def detect_obstacle(position, step):
+    """
+    Detects if an obstacle is present
+    in the vehicle's current lane
+    """
+    return step in obstacles and position == vehicle_position
+
+# ---------------------------------
+# DECISION MODULE
+# ---------------------------------
+
+def decide_action(obstacle_detected):
+    """
+    Makes driving decisions based on perception
+    """
+    global vehicle_position
+
+    if obstacle_detected:
+        if vehicle_position > 0:
+            return "MOVE LEFT"
+        elif vehicle_position < 2:
+            return "MOVE RIGHT"
+        else:
+            return "STOP"
+    else:
+        return "MOVE FORWARD"
+
+# ---------------------------------
+# CONTROL MODULE
+# ---------------------------------
+
+def apply_action(action):
+    """
+    Applies control actions to the vehicle
+    """
+    global vehicle_position
+
+    if action == "MOVE LEFT":
+        vehicle_position -= 1
+    elif action == "MOVE RIGHT":
+        vehicle_position += 1
+    elif action == "STOP":
+        print("🚨 Vehicle stopped!")
+    else:
+        pass
+
+# ---------------------------------
+# DISPLAY ROAD STATE
+# ---------------------------------
+
+def display(step):
+    road = [" "] * 3
+
+    road[vehicle_position] = "🚗"
+
+    print(f"Step {step}: |{road[0]}|{road[1]}|{road[2]}|")
+
+# ---------------------------------
+# MAIN SIMULATION LOOP
+# ---------------------------------
+
+def run_simulation():
+    print("\n🚗 Autonomous Vehicle Simulation Started\n")
+
+    for step in range(road_length):
+        obstacle = detect_obstacle(vehicle_position, step)
+        action = decide_action(obstacle)
+
+        apply_action(action)
+        display(step)
+
+        if action == "STOP":
+            break
+
+        time.sleep(0.5)
+
+    print("\nSimulation ended.")
+
+# ---------------------------------
+# PROGRAM ENTRY POINT
+# ---------------------------------
+
+if __name__ == "__main__":
+    run_simulation()
+
